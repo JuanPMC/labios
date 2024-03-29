@@ -20,65 +20,41 @@
  * <http://www.gnu.org/licenses/>.
  */
 /*******************************************************************************
- * Created by hariharan on 2/23/18.
- * Updated by akougkas on 6/29/2018
+ * Created by hariharan on 5/19/18.
+ * Updated by akougkas on 6/30/2018
  ******************************************************************************/
-#ifndef LABIOS_MAIN_DISTRIBUTEDHASHMAP_H
-#define LABIOS_MAIN_DISTRIBUTEDHASHMAP_H
+#ifndef LABIOS_MAIN_TASK_ESTIMATOR_SOLVER_H
+#define LABIOS_MAIN_TASK_ESTIMATOR_SOLVER_H
 /******************************************************************************
  *include files
  ******************************************************************************/
-#include <labios/common/enumerations.h>
-#include <labios/common/constants.h>
-#include <cereal/types/memory.hpp>
-#include <labios/common/exceptions.h>
+#include <labios/common/data_structures.h>
+#include <labios/common/solver/solver.h>
 /******************************************************************************
  *Class
  ******************************************************************************/
-class distributed_hashmap {
-protected:
+class task_estimator_solver : public solver {
+private:
   /******************************************************************************
    *Variables and members
    ******************************************************************************/
-  service service_i;
-
-public:
+  static std::shared_ptr<task_estimator_solver> instance;
   /******************************************************************************
    *Constructor
    ******************************************************************************/
-  explicit distributed_hashmap(service service) : service_i(service) {}
+  explicit task_estimator_solver(service service) : solver(service) {}
+
+public:
   /******************************************************************************
    *Interface
    ******************************************************************************/
-  virtual int put(const table &name, std::string key, const std::string &value,
-                  std::string group_key) {
-    throw NotImplementedException("put");
+  inline static std::shared_ptr<task_estimator_solver>
+  getInstance(service service) {
+    return instance == nullptr ? instance = std::shared_ptr<task_estimator_solver>(
+                                     new task_estimator_solver(service))
+                               : instance;
   }
-  virtual std::string get(const table &name, std::string key,
-                          std::string group_key) {
-    throw NotImplementedException("get");
-  }
-  virtual std::string remove(const table &name, std::string key,
-                             std::string group_key) {
-    throw NotImplementedException("remove");
-  }
-  virtual bool exists(const table &name, std::string key,
-                      std::string group_key) {
-    throw NotImplementedException("remove");
-  }
-  virtual bool purge() { throw NotImplementedException("purge"); }
-  virtual size_t counter_init(const table &name, std::string key,
-                              std::string group_key) {
-    throw NotImplementedException("counter_init");
-  }
-  virtual size_t counter_inc(const table &name, std::string key, std::string group_key) {
-    throw NotImplementedException("counter_inc");
-  }
-  virtual size_t get_servers() { throw NotImplementedException("get_servers"); }
-  /******************************************************************************
-   *Destructor
-   ******************************************************************************/
-  virtual ~distributed_hashmap() {}
+  solver_output solve(solver_input input) override;
 };
 
-#endif // LABIOS_MAIN_DISTRIBUTEDHASHMAP_H
+#endif // LABIOS_MAIN_TASK_ESTIMATOR_SOLVER_H

@@ -37,9 +37,9 @@ solver_output SimplSolver::solve(solver_input input) {
   worker_capacity = new int64_t[MAX_WORKER_COUNT];
   worker_energy = new int[MAX_WORKER_COUNT];
   int solver_index = 0, static_index = 0, actual_index = 0;
-  auto solver_task_map = std::unordered_map<int, int>();
   auto static_task_map = std::unordered_map<int, int>();
 
+  // scchedule the predefined destination lables
   for (auto task_t : input.tasks) {
     switch (task_t->t_type) {
     case task_type::WRITE_TASK: {
@@ -79,20 +79,20 @@ solver_output SimplSolver::solve(solver_input input) {
 
   auto map = labios_system::getInstance(service_i)->map_server();
   auto sorted_workers = std::vector<std::pair<int, int>>();
+
+  // sort workers on capacity
   int original_index = 0;
   for (int worker_index = 0; worker_index < MAX_WORKER_COUNT; worker_index++) {
-    std::string val =
-        map->get(table::WORKER_CAPACITY, std::to_string(worker_index + 1),
-                 std::to_string(-1));
-    sorted_workers.emplace_back(
-        std::make_pair(atoi(val.c_str()), original_index++));
+    std::string val = map->get(table::WORKER_CAPACITY, std::to_string(worker_index + 1), std::to_string(-1));
+    sorted_workers.emplace_back(std::make_pair(atoi(val.c_str()), original_index++));
   }
   std::sort(sorted_workers.begin(), sorted_workers.end());
+
+  // put capacity/score/energy on three different arrys
   int new_index = 0;
   for (auto pair : sorted_workers) {
-    std::string val =
-        map->get(table::WORKER_SCORE, std::to_string(pair.second + 1),
-                 std::to_string(-1));
+    std::string val = map->get(table::WORKER_SCORE, std::to_string(pair.second + 1), std::to_string(-1));
+
     worker_score[new_index] = atoi(val.c_str());
     worker_capacity[new_index] = pair.first;
     worker_energy[new_index] = WORKER_ENERGY;
@@ -101,17 +101,23 @@ solver_output SimplSolver::solve(solver_input input) {
               << " score:" << worker_score[new_index] << std::endl;
     new_index++;
   }
-  solver_output solver_output_i(input.num_tasks);
-  for (auto i = 1; i <= MAX_WORKER_COUNT; i++) {
-      solver_output solver_output_temp(input.num_tasks);
 
+  // create solver output
+  solver_output solver_output_i(input.num_tasks);
+  // loop max workers
+  for (auto i = 1; i <= MAX_WORKER_COUNT; i++) {
+      // create temp solution
+      solver_output solver_output_temp(input.num_tasks);
+      // loop the current max workers
       for (auto index = 0; index < i; index++) {
+          // look a capacity of worker
           int capacity = worker_capacity[index];
-          
           // Iterate over tasks
           for (auto task_index = 0; task_index < input.num_tasks; task_index++) {
+              // get size of task
               auto task_size = input.task_size[task_index];
               
+              // schedule if it fits
               if (task_size > capacity) {
                   break;
               } else {
@@ -120,7 +126,7 @@ solver_output SimplSolver::solve(solver_input input) {
               }
           }
       }
-
+      // check if all tasks are scheduled
       bool all_tasks_scheduled = true;
       for (auto t = 0; t < input.num_tasks; t++) {
         if (solver_output_temp.solution[t] == 0) {
@@ -129,25 +135,25 @@ solver_output SimplSolver::solve(solver_input input) {
         }
       }
       if (all_tasks_scheduled) {
-
+        // persist solution if all tasks ar scheduled
         for (auto t = 0; t < input.num_tasks; t++) {
           solver_output_i.solution[t] = solver_output_temp.solution[t];
         }
         delete (p);
+        // exit the planification
         break;
       }
       delete (p);
     }
-  // check if there is a solution for the DPSolver
+
+  // check if there is a solution
   for (int t = 0; t < input.num_tasks; t++) {
     if (solver_output_i.solution[t] - 1 < 0 ||
         solver_output_i.solution[t] - 1 > MAX_WORKER_COUNT) {
       throw std::runtime_error("DPSolver::solve(): No Solution found\n");
     }
-    solver_output_i.solution[t] =
-        sorted_workers[solver_output_i.solution[t] - 1].second + 1;
-    std::cout << "task:" << (t) << " worker:" << solver_output_i.solution[t]
-              << std::endl;
+    solver_output_i.solution[t] = sorted_workers[solver_output_i.solution[t] - 1].second + 1;
+    std::cout << "task:" << (t) << " worker:" << solver_output_i.solution[t]<< std::endl;
   }
 
   //    std::cout<<"Final Solution"<<std::endl;
