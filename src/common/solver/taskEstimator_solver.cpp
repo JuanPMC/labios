@@ -51,7 +51,7 @@ solver_output task_estimator_solver::solve(solver_input input) {
 
     // select a worker
     worker_id = workers[0].second
-    workers[0].first += input.task_size[task_index];
+    workers[0].first += input.task_size[i];
 
     // Schedule the task to the selected worker or the prediefined worker
     switch (input.tasks[i]->t_type) {

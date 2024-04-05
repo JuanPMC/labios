@@ -59,7 +59,7 @@ solver_output taskEstimatorHomogeneus_solver::solve(solver_input input) {
     // select a worker
     worker_id = workers[0].second
     // calculate the effect of the scheduled task
-    workers[0].first += (1/(float)worker_score[worker_id]) * input.task_size[task_index];
+    workers[0].first += (1/(float)worker_score[worker_id]) * input.task_size[i];
 
     // Schedule the task to the selected worker or the prediefined worker
     switch (input.tasks[i]->t_type) {

@@ -48,12 +48,12 @@ solver_output mTATmax_solver::solve(solver_input input) {
   for (int worker_index = 0; worker_index < MAX_WORKER_COUNT; worker_index++) {
       std::string w_score = map_server->get(table::WORKER_SCORE, std::to_string(original_index + 1), std::to_string(-1));
       for (auto i = 0; i < input.tasks.size(); i++) {
-        workers_socres.emplace_back(std::make_pair(this->mTAT(1,w_score,i+1), original_index));
+        workers_socres.emplace_back(std::make_pair(this->mTAT(1,atof(w_score.c_str()),i+1), original_index));
       }
-      original_index++;
+      original_index++; 
   }    
   // sort them form lowest to highest
-  std::sort(workers_socres.begin(), workers_socres.end(), [](int a, int b) {return a < b;);
+  std::sort(workers_socres.begin(), workers_socres.end(), [](auto a, auto b) {return a.first < b.first;});
 
   // loop tasks
   for (auto i = 0; i < input.tasks.size(); i++) {
