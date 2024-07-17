@@ -38,27 +38,29 @@ private:
   /******************************************************************************
    *Variables and members
    ******************************************************************************/
-  static std::shared_ptr<mTATmax_solver> instance;
+//  static std::shared_ptr<mTATmax_solver> instance;
+  /******************************************************************************
+   * For calculating mTAT
+   ******************************************************************************/
+  double mTAT(double mean_duration, double mean_speed, int n_tasks);
+
+public:
   /******************************************************************************
    *Constructor
    ******************************************************************************/
   explicit mTATmax_solver(service service) : solver(service) {}
   /******************************************************************************
-   * For calculating mTAT
-   ******************************************************************************/
-  double mTAT(double mean_duration, double mean_speed, int n_tasks);
-  
-public:
-  /******************************************************************************
    *Interface
    ******************************************************************************/
-  inline static std::shared_ptr<mTATmax_solver>
+  /*inline static std::shared_ptr<mTATmax_solver>
   getInstance(service service) {
     return instance == nullptr ? instance = std::shared_ptr<mTATmax_solver>(
                                      new mTATmax_solver(service))
                                : instance;
-  }
+  }*/
   solver_output solve(solver_input input) override;
+
+//  virtual ~mTATmax_solver() {}
 };
 
 #endif // LABIOS_MAIN_MTATMAX_SOLVER_H

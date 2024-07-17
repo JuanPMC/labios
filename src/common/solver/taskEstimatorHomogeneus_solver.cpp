@@ -57,7 +57,7 @@ solver_output taskEstimatorHomogeneus_solver::solve(solver_input input) {
     std::sort(workers.begin(), workers.end());
 
     // select a worker
-    worker_id = workers[0].second
+    auto worker_id = workers[0].second;
     // calculate the effect of the scheduled task
     workers[0].first += (1/(float)worker_score[worker_id]) * input.task_size[i];
 

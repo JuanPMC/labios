@@ -69,7 +69,9 @@ enum solver_impl_type {
   GREEDY = 1,
   ROUND_ROBIN = 2,
   RANDOM_SELECT = 3,
-  DEFAULT = 4
+  DEFAULT = 4,
+  MTAT = 5,
+  TASK_ESTIMATOR_H = 6
 };
 enum io_client_type { POSIX = 0 };
 

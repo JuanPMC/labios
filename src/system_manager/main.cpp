@@ -19,9 +19,24 @@
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+#include "system_manager_service.h"
+#include <labios/common/enumerations.h>
+#include <signal.h>
 #include <iostream>
 
+
 int main() {
-  std::cout << "Hello, World!" << std::endl;
-  return 0;
+
+    // Assuming SOME_SERVICE is a valid service enumeration value
+    service my_service;
+
+    // Get the singleton instance of the system_manager_service
+    std::shared_ptr<system_manager_service> manager = system_manager_service::getInstance(my_service);
+
+    // Run the service
+    std::cout << "Starting system manager service..." << std::endl;
+    manager->run();
+    std::cout << "System manager service stopped." << std::endl;
+
+    return 0;
 }

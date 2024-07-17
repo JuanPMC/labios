@@ -26,6 +26,8 @@
 #include <labios/common/solver/dp_solver.h>
 #include <labios/common/solver/random_solver.h>
 #include <labios/common/solver/round_robin_solver.h>
+#include <labios/common/solver/mTATmax_solver.h>
+#include <labios/common/solver/taskEstimatorHomogeneus_solver.h>
 #include <labios/labios_system.h>
 
 std::shared_ptr<labios_system> labios_system::instance = nullptr;
@@ -52,7 +54,11 @@ void labios_system::init(service service) {
     solver_i = round_robin_solver::getInstance(service);
   } else if (solver_impl_type_t == solver_impl_type::DEFAULT) {
     solver_i = std::make_shared<default_solver>(service);
-  }
+  } else if (solver_impl_type_t == solver_impl_type::MTAT) {
+    solver_i = std::make_shared<mTATmax_solver>(service);
+  } else if (solver_impl_type_t == solver_impl_type::TASK_ESTIMATOR_H) {
+    solver_i = std::make_shared<taskEstimatorHomogeneus_solver>(service);
+  } 
   switch (service) {
   case LIB: {
     if (rank == 0) {

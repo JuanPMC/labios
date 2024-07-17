@@ -25,7 +25,6 @@
 #include <labios/common/solver/mTATmax_solver.h>
 #include <labios/labios_system.h>
 
-std::shared_ptr<mTATmax_solver> mTATmax_solver::instance = nullptr;
 /******************************************************************************
  * For calculating mTAT
  ******************************************************************************/
@@ -50,15 +49,15 @@ solver_output mTATmax_solver::solve(solver_input input) {
       for (auto i = 0; i < input.tasks.size(); i++) {
         workers_socres.emplace_back(std::make_pair(this->mTAT(1,atof(w_score.c_str()),i+1), original_index));
       }
-      original_index++; 
-  }    
+      original_index++;
+  }
   // sort them form lowest to highest
   std::sort(workers_socres.begin(), workers_socres.end(), [](auto a, auto b) {return a.first < b.first;});
 
   // loop tasks
   for (auto i = 0; i < input.tasks.size(); i++) {
     // select a worker
-    worker_id = workers_socres[i].second
+    auto worker_id = workers_socres[i].second;
 
     // Schedule the task to the selected worker or the prediefined worker
     switch (input.tasks[i]->t_type) {

@@ -39,11 +39,6 @@ private:
    *Variables and members
    ******************************************************************************/
   static std::shared_ptr<taskEstimatorHomogeneus_solver> instance;
-  /******************************************************************************
-   *Constructor
-   ******************************************************************************/
-  explicit taskEstimatorHomogeneus_solver(service service) : solver(service) {}
-
 public:
   /******************************************************************************
    *Interface
@@ -54,6 +49,12 @@ public:
                                      new taskEstimatorHomogeneus_solver(service))
                                : instance;
   }
+
+  /******************************************************************************
+   *Constructor
+   ******************************************************************************/
+  explicit taskEstimatorHomogeneus_solver(service service) : solver(service) {}
+
   solver_output solve(solver_input input) override;
 };
 
